@@ -1,95 +1,79 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
 
-export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.js</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+import styles from './page.module.css';
+import { useState } from 'react';
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
+export default function HomePage() {
+    // Nosso estado agora é bem mais simples. Apenas o que está no visor.
+    const [display, setDisplay] = useState('0');
+
+    // Função para lidar com cliques em números e operadores
+    const handleInput = (value) => {
+        // Se o display for '0' ou 'Erro', substitui pelo novo valor
+        if (display === '0' || display === 'Erro') {
+            setDisplay(value);
+        } else {
+            // Senão, concatena o novo valor ao que já existe
+            setDisplay(display + value);
+        }
+    };
+
+    // Função para o ponto decimal, com lógica para evitar múltiplos pontos
+    const handleDecimalClick = () => {
+        // Encontra o último número na expressão
+        const parts = display.split(/[\+\-\*\/]/);
+        const lastPart = parts[parts.length - 1];
+
+        // Se o último número ainda não tiver um ponto, adiciona
+        if (!lastPart.includes('.')) {
+            setDisplay(display + '.');
+        }
+    };
+
+    // Função que limpa o visor
+    const handleClearClick = () => {
+        setDisplay('0');
+    };
+
+    // Função que calcula o resultado final
+    const handleEqualsClick = () => {
+        try {
+            // Usamos a função eval() para calcular a expressão no visor.
+            // String() converte o resultado final para texto.
+            const result = eval(display);
+            setDisplay(String(result));
+        } catch (error) {
+            // Se a expressão for inválida (ex: "5+"), mostramos "Erro".
+            setDisplay('Erro');
+        }
+    };
+
+    return (
+        <div className={styles.calculator}>
+            <div className={styles.display}>{display}</div>
+            <div className={styles.buttons}>
+                <button onClick={handleClearClick} className={`${styles.button} ${styles.clear}`}>AC</button>
+                <button onClick={() => handleInput('/')} className={`${styles.button} ${styles.operator}`}>/</button>
+                <button onClick={() => handleInput('*')} className={`${styles.button} ${styles.operator}`}>*</button>
+
+                <button onClick={() => handleInput('7')} className={styles.button}>7</button>
+                <button onClick={() => handleInput('8')} className={styles.button}>8</button>
+                <button onClick={() => handleInput('9')} className={styles.button}>9</button>
+                <button onClick={() => handleInput('-')} className={`${styles.button} ${styles.operator}`}>-</button>
+
+                <button onClick={() => handleInput('4')} className={styles.button}>4</button>
+                <button onClick={() => handleInput('5')} className={styles.button}>5</button>
+                <button onClick={() => handleInput('6')} className={styles.button}>6</button>
+                <button onClick={() => handleInput('+')} className={`${styles.button} ${styles.operator}`}>+</button>
+
+                <button onClick={() => handleInput('1')} className={styles.button}>1</button>
+                <button onClick={() => handleInput('2')} className={styles.button}>2</button>
+                <button onClick={() => handleInput('3')} className={styles.button}>3</button>
+                <button onClick={handleEqualsClick} className={`${styles.button} ${styles.equals}`} style={{gridRow: 'span 2'}}>=</button>
+
+                <button onClick={() => handleInput('0')} className={styles.button} style={{gridColumn: 'span 2'}}>0</button>
+                <button onClick={handleDecimalClick} className={styles.button}>.</button>
+            </div>
         </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+    );
 }
